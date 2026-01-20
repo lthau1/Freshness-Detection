@@ -1,0 +1,19 @@
+# Python bytecode (cache files generated when running Python code)
+__pycache__/
+*.pyc
+
+# Virtual environment (MUST be ignored because it is very large)
+venv/
+
+# Editor / IDE configuration folders
+.vscode/
+.idea/
+
+# Training result files (ignore if you don't want to push the entire runs folder)
+runs/detect
+
+# System files
+.DS_Store
+Thumbs.db
+
+models/

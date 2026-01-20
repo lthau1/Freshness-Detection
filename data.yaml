@@ -1,0 +1,24 @@
+train: ../train_balanced/images
+val: ../valid/images
+test: ../test/images
+
+nc: 9
+names:
+  [
+    "apple",
+    "banana",
+    "bittergourd",
+    "capsicum",
+    "cucumber",
+    "okra",
+    "orange",
+    "potato",
+    "tomato",
+  ]
+
+roboflow:
+  workspace: lam-q3dtp
+  project: my-first-project-aqtwy
+  version: 5
+  license: Private
+  url: https://app.roboflow.com/lam-q3dtp/my-first-project-aqtwy/5

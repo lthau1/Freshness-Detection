@@ -1,0 +1,27 @@
+.main { background-color: #f5f7f9; }
+    .stHeading { color: #2e7d32; }
+    /* Ẩn nút tròn của radio button */
+    [data-testid="stSidebar"] .stRadio div[role="radiogroup"] > label > div:first-child {
+        display: none !important;
+    }
+    /* Biến các item menu thành khối chữ nhật */
+    [data-testid="stSidebar"] .stRadio div[role="radiogroup"] > label {
+        background-color: transparent;
+        border-radius: 5px;
+        padding: 10px 15px;
+        margin-bottom: 5px;
+        transition: all 0.3s;
+        cursor: pointer;
+        display: block;
+        border: 1px solid transparent;
+    }
+    /* Hiệu ứng khi rê chuột vào (Hover) */
+    [data-testid="stSidebar"] .stRadio div[role="radiogroup"] > label:hover {
+        background-color: #e0e0e0; /* Nền đậm lên một chút */
+        border: 1px solid #ccc;
+    }
+    /* Màu khi item được chọn */
+    [data-testid="stSidebar"] .stRadio div[role="radiogroup"] [data-bv-pressed="true"] > label {
+        background-color: #2e7d32 !important;
+        color: white !important;
+    }
