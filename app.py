@@ -25,8 +25,8 @@ def download_model(file_id, output_path):
             gdown.download(url, output_path, quiet=False)
 
 # Replace these with your actual file IDs
-download_model('1GFRhN_P7ZmQSskmxo9Hy82dkUOUuE40R', 'models/best.pt')
-download_model('1JFwuHVZDLHgZ7rziAOyuc5ERii73CU7b', 'models/resnet_fresh_rotten_best.pth')
+download_model('1GMorpD8czccvA52bIeoOlkmrUdSbSQQ5', 'models/best.pt')
+download_model('1dIxLvd895dewrMI-kB6AWMnh8eGNGXp5', 'models/resnet_fresh_rotten_best.pth')
 
 
 # --- FUNCTION TO LOAD RESNET50 MODEL ---
