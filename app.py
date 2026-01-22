@@ -7,10 +7,27 @@ from PIL import Image
 from ultralytics import YOLO
 import cv2
 import numpy as np
-
+import gdown
+import os
 
 # --- PAGE CONFIGURATION ---
-st.set_page_config(page_title="NCKH - Freshness Detection", layout="wide")
+st.set_page_config(page_title="AI-based Fruit & Vegetable Freshness Detection", layout="wide")
+
+# Create the 'models' directory if it does not exist
+if not os.path.exists('models'):
+    os.makedirs('models')
+
+# Function to download a file from Google Drive
+def download_model(file_id, output_path):
+    if not os.path.exists(output_path):
+        with st.spinner(f'Downloading model {output_path}... Please wait a moment.'):
+            url = f'https://drive.google.com/uc?id={file_id}'
+            gdown.download(url, output_path, quiet=False)
+
+# Replace these with your actual file IDs
+download_model('1GFRhN_P7ZmQSskmxo9Hy82dkUOUuE40R', 'models/best.pt')
+download_model('1JFwuHVZDLHgZ7rziAOyuc5ERii73CU7b', 'models/resnet_fresh_rotten_best.pth')
+
 
 # --- FUNCTION TO LOAD RESNET50 MODEL ---
 @st.cache_resource # Prevents reloading the model on every user interaction

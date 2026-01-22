@@ -1,3 +1,5 @@
+🚀 Live Demo: https://freshness-detection-snzgh2u9zrtnujh9xmgby2.streamlit.app/
+
 # Freshness Detection System for Agricultural Products 
 
 This project is an AI-powered web application designed to identify 9 types of fruits/vegetables and evaluate their freshness status (Fresh vs. Rotten) using a Hybrid Deep Learning approach (YOLOv11 + ResNet50).
@@ -63,3 +65,4 @@ python -m pip install -r requirements.txt
 Once the installation is complete, start the web interface:
 
 streamlit run app.py
+

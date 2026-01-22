@@ -4,5 +4,6 @@ torchvision
 pandas
 Pillow
 ultralytics
-opencv-python
+opencv-python-headless
 numpy<2.0.0
+gdown
