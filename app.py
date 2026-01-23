@@ -66,8 +66,7 @@ load_css("assets/style.css")
 with st.sidebar:
     st.title("Navigation")
     app_mode = st.radio("", ["1. Introduction", "2. System Demo"])
-    st.markdown("---")
-    st.info("Topic: Identification of 9 types of fresh/withered vegetables using Deep Learning.")
+    
 
 # ---------------------------------------------------------
 # SECTION 1: INTRODUCTION
@@ -153,10 +152,10 @@ elif "2. System Demo" in app_mode:
                     
                     # Display 4 technical metrics
                     st.write("---")
-                    st.write(f"🎯 Detection Confidence (YOLO): **{conf_yolo*100:.2f}%**")
-                    st.write(f"🔬 Classification Confidence (ResNet): **{conf_res.item()*100:.2f}%**")
+                    st.write(f"Detection Confidence (YOLO): **{conf_yolo*100:.2f}%**")
+                    st.write(f"Classification Confidence (ResNet): **{conf_res.item()*100:.2f}%**")
                     
-                    st.caption("Note: Results are based on the clearest feature region extracted by the system.")
+                    
                 else:
                     st.warning("⚠️ System could not identify any objects in the image.")
 
