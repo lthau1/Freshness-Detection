@@ -88,7 +88,7 @@ if app_mode == "1. Introduction":
         """)
     with col2:
         # Illustration image for the project
-        st.image("https://th.bing.com/th/id/OIP.6_S-nI_x8y6f_Yp0Y_o9OQHaE8?rs=1&pid=ImgDetMain", caption="AI in Agriculture")
+        # st.image("https://th.bing.com/th/id/OIP.6_S-nI_x8y6f_Yp0Y_o9OQHaE8?rs=1&pid=ImgDetMain", caption="AI in Agriculture")
 
 # ---------------------------------------------------------
 # SECTION 2: SYSTEM DEMO - ROBUST GLOBAL ANALYSIS
