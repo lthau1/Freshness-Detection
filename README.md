@@ -1,4 +1,4 @@
-🚀 Live Demo: https://freshness-detection-snzgh2u9zrtnujh9xmgby2.streamlit.app/
+🚀 Live Demo: https://freshness-detection-lthau1.streamlit.app/
 
 # Freshness Detection System for Agricultural Products 
 
