@@ -143,7 +143,7 @@ elif "2. System Demo" in app_mode:
                     is_fresh = "fresh" in trang_thai.lower() or "tươi" in trang_thai.lower()
 
                     # --- DISPLAY CONSOLIDATED RESULT ---
-                    st.write("### **Identification & Evaluation Results**")
+                    st.markdown(f"### Product Type: **{ten_loai}**")
                     
                     if is_fresh:
                         st.success(f"🌿 Freshness Status: **{trang_thai}**")
