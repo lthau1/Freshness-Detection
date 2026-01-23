@@ -73,23 +73,19 @@ with st.sidebar:
 # ---------------------------------------------------------
 if app_mode == "1. Introduction":
     st.header("🍎 Scientific Research Introduction")
-    col1, col2 = st.columns([2, 1])
-    with col1:
-        st.write("""
-        ### Research Objectives:
-        Build an AI model using Deep Learning techniques to classify and evaluate the freshness of agricultural products, aiming to minimize food waste and improve production efficiency.
-        
-        ### Research Objects: 
-        9 types of fruits and vegetables (Apple, Banana, Bitter Gourd, Bell Pepper, Cucumber, Okra, Orange, Potato, Tomato).
-        
-        ### Technologies Used:
-        * **YOLO v11:** For object detection and localization.
-        * **ResNet50:** For detailed classification of fresh/withered status.
-        """)
-    with col2:
-        # Illustration image for the project
-        # st.image("https://th.bing.com/th/id/OIP.6_S-nI_x8y6f_Yp0Y_o9OQHaE8?rs=1&pid=ImgDetMain", caption="AI in Agriculture")
-
+    
+    st.write("""
+    ### Research Objectives:
+    Build an AI model using Deep Learning techniques to classify and evaluate the freshness of agricultural products, aiming to minimize food waste and improve production efficiency.
+    
+    ### Research Objects: 
+    9 types of fruits and vegetables (Apple, Banana, Bitter Gourd, Bell Pepper, Cucumber, Okra, Orange, Potato, Tomato).
+    
+    ### Technologies Used:
+    * **YOLO v11:** For object detection and localization.
+    * **ResNet50:** For detailed classification of fresh/withered status.
+    """)
+    
 # ---------------------------------------------------------
 # SECTION 2: SYSTEM DEMO - ROBUST GLOBAL ANALYSIS
 # ---------------------------------------------------------
