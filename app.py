@@ -106,7 +106,7 @@ elif "2. System Demo" in app_mode:
             st.image(img_pil, caption="🖼️ Original Image")
 
         with col_right:
-            st.subheader("Identification & Evaluation Results")
+            st.write("### **Identification & Evaluation Results**")
             try:
                 # Load models
                 yolo_model = YOLO('models/best.pt') 
@@ -143,12 +143,12 @@ elif "2. System Demo" in app_mode:
                     is_fresh = "fresh" in trang_thai.lower() or "tươi" in trang_thai.lower()
 
                     # --- DISPLAY CONSOLIDATED RESULT ---
-                    st.markdown(f"### Product Type: **{ten_loai}**")
+                    st.write("### **Identification & Evaluation Results**")
                     
                     if is_fresh:
-                        st.success(f"🌿 System Status: **{trang_thai}**")
+                        st.success(f"🌿 Freshness Status: **{trang_thai}**")
                     else:
-                        st.error(f"🍂 System Status: **{trang_thai}**")
+                        st.error(f"🍂 Freshness Status: **{trang_thai}**")
                     
                     # Display 4 technical metrics
                     st.write("---")
