@@ -1,10 +1,10 @@
 .main { background-color: #f5f7f9; }
     .stHeading { color: #2e7d32; }
-    /* Ẩn nút tròn của radio button */
+    /* Hide the default radio button circle */
     [data-testid="stSidebar"] .stRadio div[role="radiogroup"] > label > div:first-child {
         display: none !important;
     }
-    /* Biến các item menu thành khối chữ nhật */
+    /* Style menu items as rectangular blocks */
     [data-testid="stSidebar"] .stRadio div[role="radiogroup"] > label {
         background-color: transparent;
         border-radius: 5px;
@@ -15,12 +15,12 @@
         display: block;
         border: 1px solid transparent;
     }
-    /* Hiệu ứng khi rê chuột vào (Hover) */
+    /* Hover effect */
     [data-testid="stSidebar"] .stRadio div[role="radiogroup"] > label:hover {
         background-color: #e0e0e0; /* Nền đậm lên một chút */
         border: 1px solid #ccc;
     }
-    /* Màu khi item được chọn */
+    /* Style for selected item */
     [data-testid="stSidebar"] .stRadio div[role="radiogroup"] [data-bv-pressed="true"] > label {
         background-color: #2e7d32 !important;
         color: white !important;
