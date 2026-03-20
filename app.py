@@ -1,17 +1,20 @@
-import streamlit as st
-import torch
-import torch.nn as nn
-from torchvision import models, transforms
-import pandas as pd
-from PIL import Image
-# ===== FIX TorchVision missing in Ultralytics model =====
+# ===== FIX TorchVision missing =====
 import ultralytics.nn.modules.block as block
 
 class TorchVision:
     pass
 
 block.TorchVision = TorchVision
-# =======================================================
+
+import torch
+torch.serialization.add_safe_globals({"TorchVision": TorchVision})
+# ==================================
+import streamlit as st
+import torch
+import torch.nn as nn
+from torchvision import models, transforms
+import pandas as pd
+from PIL import Image
 from ultralytics import YOLO
 import cv2
 import numpy as np
@@ -36,6 +39,10 @@ def download_model(file_id, output_path):
 download_model('1GMorpD8czccvA52bIeoOlkmrUdSbSQQ5', 'models/best.pt')
 download_model('1dIxLvd895dewrMI-kB6AWMnh8eGNGXp5', 'models/resnet_fresh_rotten_best.pth')
 
+# --- FUNCTION TO LOAD YOLO MODEL ---
+@st.cache_resource
+def load_yolo_model():
+    return YOLO('models/best.pt')
 
 # --- FUNCTION TO LOAD RESNET50 MODEL ---
 @st.cache_resource # Prevents reloading the model on every user interaction
@@ -113,7 +120,7 @@ elif "2. System Demo" in app_mode:
             st.write("### **Identification & Evaluation Results**")
             try:
                 # Load models
-                yolo_model = YOLO('models/best.pt') 
+                yolo_model = load_yolo_model() 
                 resnet_model, device = load_resnet_model('models/resnet_fresh_rotten_best.pth')
                 
                 # Run inference
