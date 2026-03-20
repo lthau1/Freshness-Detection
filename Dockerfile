@@ -1,19 +1,21 @@
-FROM python:3.11-slim
-
-ENV DEBIAN_FRONTEND=noninteractive
-
-RUN apt-get update && apt-get install -y \
-    libgl1 \
-    libglib2.0-0 \
-    && rm -rf /var/lib/apt/lists/*
+FROM python:3.11.9
 
 WORKDIR /app
 
-COPY requirements.txt .
-
-RUN pip install --no-cache-dir -r requirements.txt
-
 COPY . .
+
+RUN pip install --upgrade pip
+
+RUN pip install \
+    streamlit==1.32.0 \
+    torch==2.0.1 \
+    torchvision==0.15.2 \
+    ultralytics==8.0.20 \
+    opencv-python-headless \
+    pillow \
+    numpy \
+    pandas \
+    gdown
 
 EXPOSE 8501
 

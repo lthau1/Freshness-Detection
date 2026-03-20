@@ -1,14 +1,15 @@
-# ===== FIX TorchVision missing =====
+# FIX ultralytics custom layers
 import ultralytics.nn.modules.block as block
+import ultralytics.nn.modules.conv as conv
 
 class TorchVision:
     pass
 
-block.TorchVision = TorchVision
+class Index:
+    pass
 
-import torch
-torch.serialization.add_safe_globals({"TorchVision": TorchVision})
-# ==================================
+block.TorchVision = TorchVision
+conv.Index = Index
 import streamlit as st
 import torch
 import torch.nn as nn
