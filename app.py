@@ -4,6 +4,14 @@ import torch.nn as nn
 from torchvision import models, transforms
 import pandas as pd
 from PIL import Image
+# ===== FIX TorchVision missing in Ultralytics model =====
+import ultralytics.nn.modules.block as block
+
+class TorchVision:
+    pass
+
+block.TorchVision = TorchVision
+# =======================================================
 from ultralytics import YOLO
 import cv2
 import numpy as np
