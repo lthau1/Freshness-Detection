@@ -1,3 +1,1 @@
-libgl1
-# New version compatible with Debian Trixie
 libglib2.0-0t64 
