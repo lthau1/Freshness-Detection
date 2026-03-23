@@ -1,17 +1,5 @@
 
-# FIX ultralytics custom layers (PHẢI đặt trên cùng, trước import YOLO)
-import ultralytics.nn.modules.block as block
-import ultralytics.nn.modules.conv as conv
 
-class TorchVision:
-    pass
-
-class Index:
-    pass
-
-block.TorchVision = TorchVision
-conv.Index = Index
-# ==================================
 import streamlit as st
 import torch
 import torch.nn as nn
