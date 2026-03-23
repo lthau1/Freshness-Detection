@@ -1,27 +1,8 @@
+import os
 
-import torch.nn as nn
-import ultralytics.nn.modules.block as block
-import ultralytics.nn.modules.conv as conv
+# Disable YOLO auto-install to avoid unexpected dependency installation
+os.environ["YOLO_AUTOINSTALL"] = "False"
 
-# ===== TorchVision =====
-class TorchVision(nn.Module):
-    def __init__(self, *args, **kwargs):
-        super().__init__()
-
-    def forward(self, x):
-        return x
-
-block.TorchVision = TorchVision
-
-# ===== Index =====
-class Index(nn.Module):
-    def __init__(self, *args, **kwargs):
-        super().__init__()
-
-    def forward(self, x):
-        return x
-
-conv.Index = Index
 import streamlit as st
 import torch
 import torch.nn as nn
