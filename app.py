@@ -1,5 +1,16 @@
 
+import torch.nn as nn
+import ultralytics.nn.modules.block as block
 
+class TorchVision(nn.Module):
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+
+    def forward(self, x):
+        return x
+
+# Re-register the TorchVision class for Ultralytics compatibility
+block.TorchVision = TorchVision
 import streamlit as st
 import torch
 import torch.nn as nn
