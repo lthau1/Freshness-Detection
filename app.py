@@ -29,8 +29,9 @@ def download_model(file_id, output_path):
             url = f'https://drive.google.com/uc?id={file_id}'
             gdown.download(url, output_path, quiet=False)
 
-# Replace these with your actual file IDs
-download_model('1GMorpD8czccvA52bIeoOlkmrUdSbSQQ5', 'models/best.pt')
+# Replace these with your actual file IDs 
+# download_model('1GMorpD8czccvA52bIeoOlkmrUdSbSQQ5', 'models/best.pt')
+download_model('1cXwpSbcUIVk3u54Kkun4ywzqw1B86G0O', 'models/best.pt')
 download_model('1dIxLvd895dewrMI-kB6AWMnh8eGNGXp5', 'models/resnet_fresh_rotten_best.pth')
 
 # --- FUNCTION TO LOAD YOLO MODEL ---
