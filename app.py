@@ -25,9 +25,9 @@ if not os.path.exists('models'):
 # Function to download a file from Google Drive
 def download_model(file_id, output_path):
     if not os.path.exists(output_path):
-        with st.spinner(f'Downloading model {output_path}... Please wait a moment.'):
+        with st.spinner(f'Downloading {output_path}...'):
             url = f'https://drive.google.com/uc?id={file_id}'
-            gdown.download(url, output_path, quiet=False)
+            gdown.download(url, output_path, quiet=False, fuzzy=True)
 
 # Replace these with your actual file IDs 
 # download_model('1GMorpD8czccvA52bIeoOlkmrUdSbSQQ5', 'models/best.pt')
