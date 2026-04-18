@@ -1,23 +1,25 @@
-FROM python:3.11
+FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY . .
+# Optimize Python behavior
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Install system dependencies (required for YOLO)
+RUN apt-get update && apt-get install -y \
+    libgl1 \
+    libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy dependencies first (better caching)
+COPY requirements.txt .
 
 RUN pip install --upgrade pip
+RUN pip install --no-cache-dir -r requirements.txt
 
-RUN apt-get update && apt-get install -y libgl1
-
-RUN pip install \
-    streamlit==1.32.0 \
-    torch==2.0.1 \
-    torchvision==0.15.2 \
-    ultralytics==8.0.130 \
-    opencv-python-headless==4.8.1.78 \
-    numpy==1.26.4 \
-    pandas \
-    pillow \
-    gdown
+# Copy application source code
+COPY . .
 
 EXPOSE 8501
 
