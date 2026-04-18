@@ -16,7 +16,7 @@ from ultralytics.nn.tasks import DetectionModel
 torch.serialization.add_safe_globals([DetectionModel])
 
 ckpt = torch.load(
-    "models/best.pt",
+    "../models/best.pt",
     map_location="cpu",
     weights_only=False
 )

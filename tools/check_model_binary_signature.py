@@ -7,7 +7,7 @@ This script scans the .pt file to detect specific strings
 Useful for diagnosing pickle-related issues.
 """
 
-with open("models/best.pt", "rb") as f:
+with open("../models/best.pt", "rb") as f:
     data = f.read()
 
 print(b"TorchVision" in data)

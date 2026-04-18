@@ -1,68 +1,193 @@
-🚀 Live Demo: https://freshness-detection-lthau1.streamlit.app/
+🚀 **Live Demo (Render):** https://freshness-detection-ieyu.onrender.com
+⚡ **Alternative Demo (Streamlit):** https://freshness-detection-lthau1.streamlit.app/
 
-# Freshness Detection System for Agricultural Products 
+---
 
-This project is an AI-powered web application designed to identify 9 types of fruits/vegetables and evaluate their freshness status (Fresh vs. Rotten) using a Hybrid Deep Learning approach (YOLOv11 + ResNet50).
+# 🥦 Freshness Detection System for Agricultural Products
 
-## 📌 Research Objectives
-* **Waste Reduction:** Early detection of spoiled products to prevent cross-contamination in storage.
-* **Production Efficiency:** Automating the quality inspection process in the supply chain.
-* **Accuracy:** Combining the localization power of YOLO with the high-precision classification of ResNet50.
+An AI-powered web application that detects fruit/vegetable types and evaluates their freshness status (**Fresh vs. Rotten**) using a hybrid deep learning pipeline.
+
+---
+
+## 🧠 Model Architecture
+
+This system combines two deep learning models:
+
+* **Object Detection:** YOLOv11 (Ultralytics)
+* **Classification:** ResNet50 (PyTorch)
+* **Frontend:** Streamlit
+
+### 🔄 Pipeline
+
+1. Upload an image
+2. YOLO detects the object (fruit/vegetable)
+3. The detected region is cropped
+4. ResNet50 classifies freshness (Fresh / Rotten)
+5. Final result is displayed with confidence scores
+
+---
+
+## 🎯 Objectives
+
+* **Waste Reduction:** Detect spoiled products early to prevent contamination
+* **Automation:** Replace manual inspection in supply chains
+* **Accuracy:** Combine detection + classification for better performance
+
+---
 
 ## 📂 Project Structure
+
 ```text
 freshness_detection/
-├── app.py              # Main Streamlit application
-├── requirements.txt    # List of required Python libraries
-├── data.yaml           # YOLO configuration (labels info)
-├── models/             # Pre-trained models
-│   ├── best.pt         # YOLOv11 weights (Detection)
-│   └── resnet_fresh_rotten_best.pth   # ResNet50 weights (Classification)
-├── assets/             # UI styling
-│   └── style.css       # Custom CSS for the web interface
-└── README.md           # Project documentation\
+├── app.py
+├── Dockerfile
+├── requirements.txt
+├── data.yaml
+├── README.md
 
+├── assets/
+│   └── style.css
 
-## 📥 Model Weights Download (REQUIRED)
-Due to GitHub's file size limits, please download BOTH weight files and place them in the `/models` folder:
+├── models/              # model files (NOT included)
+│   └── .gitkeep
 
-* **YOLOv11 (best.pt):https://drive.google.com/drive/folders/1GFRhN_P7ZmQSskmxo9Hy82dkUOUuE40R
-* **ResNet50 (resnet_...pth):https://drive.google.com/drive/folders/1JFwuHVZDLHgZ7rziAOyuc5ERii73CU7b
+├── tools/               # debugging utilities
+│   ├── inspect_yolo_checkpoint.py
+│   ├── check_model_binary_signature.py
+│   ├── read_checkpoint_metadata.py
+│   └── fix_model_checkpoint.py
 
-## 🚀 Quick Start
+├── .gitignore
+├── .dockerignore
+```
 
-1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/lthau1/Freshness-Detection.git](https://github.com/lthau1/Freshness-Detection.git)
-  
+---
 
+## 📥 Model Weights (Required)
 
-🚀 Setup & Installation
-1. Prerequisites
-Python 3.11.9 
+Due to GitHub file size limits, download model weights manually:
 
-Download: https://www.python.org/downloads/release/python-3119/
+* **YOLOv11 weights:**
+  https://drive.google.com/drive/folders/1GFRhN_P7ZmQSskmxo9Hy82dkUOUuE40R
 
-2. Installation Steps
-Open your terminal in the project directory and run:
+* **ResNet50 weights:**
+  https://drive.google.com/drive/folders/1JFwuHVZDLHgZ7rziAOyuc5ERii73CU7b
 
-# Create a virtual environment
-py -3.11 -m venv venv
+Place them inside:
 
-# Unlock permission to run scripts
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```text
+models/
+```
 
-# Activate the virtual environment
-.\venv\Scripts\activate
+---
 
-# Update pip
-python -m pip install --upgrade pip
+## ⚙️ Installation (Local)
 
-# Install required libraries
-python -m pip install -r requirements.txt
+### 1. Clone the repository
 
-3. Running the Application
-Once the installation is complete, start the web interface:
+```bash
+git clone https://github.com/lthau1/Freshness-Detection.git
+cd Freshness-Detection
+```
 
+---
+
+### 2. Create virtual environment
+
+```bash
+python -m venv venv
+```
+
+Activate:
+
+* Windows:
+
+```bash
+venv\Scripts\activate
+```
+
+* macOS/Linux:
+
+```bash
+source venv/bin/activate
+```
+
+---
+
+### 3. Install dependencies
+
+```bash
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+---
+
+## ▶️ Run Application
+
+```bash
 streamlit run app.py
+```
 
+Open browser:
+
+```text
+http://localhost:8501
+```
+
+---
+
+## 🐳 Run with Docker
+
+```bash
+docker build -t freshness-app .
+docker run -p 8501:8501 freshness-app
+```
+
+---
+
+## 🧪 Tools (Debugging Utilities)
+
+Located in the `tools/` folder:
+
+* `inspect_yolo_checkpoint.py`
+  → Inspect model metadata (version, training args)
+
+* `check_model_binary_signature.py`
+  → Check raw binary for problematic strings (e.g., TorchVision)
+
+* `read_checkpoint_metadata.py`
+  → Safely read checkpoint metadata
+
+* `fix_model_checkpoint.py`
+  → Re-save YOLO model to fix serialization issues
+
+---
+
+## ⚠️ Notes
+
+* Model files are not included in the repository
+* Ensure correct Ultralytics version to avoid loading errors
+* First run may take time due to model download
+* Docker builds may require additional system libraries for OpenCV
+
+---
+
+## 📸 Demo
+
+*(Add screenshot here for better presentation)*
+
+```text
+assets/demo.png
+```
+
+---
+
+## 📌 Author
+
+Developed by **lthau1**
+GitHub: https://github.com/lthau1
+
+## 📄 License
+
+This project is for academic and research purposes.
