@@ -28,11 +28,13 @@ def download_model(file_id, output_path):
         with st.spinner(f'Downloading {output_path}...'):
             url = f'https://drive.google.com/uc?id={file_id}'
             gdown.download(url, output_path, quiet=False, fuzzy=True)
+ 
 
-# Replace these with your actual file IDs 
-# download_model('1GMorpD8czccvA52bIeoOlkmrUdSbSQQ5', 'models/best.pt')
+# Download failed: file is not publicly accessible on Google Drive (permission denied).
+#download_model('1GMorpD8czccvA52bIeoOlkmrUdSbSQQ5', 'models/best.pt')
+#download_model('1dIxLvd895dewrMI-kB6AWMnh8eGNGXp5', 'models/resnet_fresh_rotten_best.pth')
 download_model('1cXwpSbcUIVk3u54Kkun4ywzqw1B86G0O', 'models/best.pt')
-download_model('1dIxLvd895dewrMI-kB6AWMnh8eGNGXp5', 'models/resnet_fresh_rotten_best.pth')
+download_model('1FQlYHLc-TmbqQFez4ubgj3qW16rIMFuT', 'models/resnet_fresh_rotten_best.pth')
 
 # --- FUNCTION TO LOAD YOLO MODEL ---
 @st.cache_resource
