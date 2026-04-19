@@ -22,19 +22,36 @@ st.set_page_config(page_title="AI-based Fruit & Vegetable Freshness Detection", 
 if not os.path.exists('models'):
     os.makedirs('models')
 
-# Function to download a file from Google Drive
-def download_model(file_id, output_path):
+# Function to download a file from a given URL (e.g., Hugging Face or direct link)
+import requests
+
+HF_TOKEN = os.getenv("HF_TOKEN")  # retrieved from Render environment variable 
+
+def download_model(url, output_path):
     if not os.path.exists(output_path):
-        with st.spinner(f'Downloading {output_path}...'):
-            url = f'https://drive.google.com/uc?export=download&id={file_id}'
-            gdown.download(url, output_path, quiet=False)
- 
+        headers = {"Authorization": f"Bearer {HF_TOKEN}"}
+
+        r = requests.get(url, headers=headers, stream=True)
+        r.raise_for_status()
+
+        with open(output_path, "wb") as f:
+            for chunk in r.iter_content(8192):
+                f.write(chunk)
 
 # Download failed: file is not publicly accessible on Google Drive (permission denied).
 #download_model('1GMorpD8czccvA52bIeoOlkmrUdSbSQQ5', 'models/best.pt')
 #download_model('1dIxLvd895dewrMI-kB6AWMnh8eGNGXp5', 'models/resnet_fresh_rotten_best.pth')
-download_model('1cXwpSbcUIVk3u54Kkun4ywzqw1B86G0O', 'models/best.pt')
-download_model('1FQlYHLc-TmbqQFez4ubgj3qW16rIMFuT', 'models/resnet_fresh_rotten_best.pth')
+
+# Download models from Hugging Face (public and reliable source)
+download_model(
+    "https://huggingface.co/your-name/repo/resolve/main/best.pt",
+    "models/best.pt"
+)
+
+download_model(
+    "https://huggingface.co/your-name/repo/resolve/main/resnet_fresh_rotten_best.pth",
+    "models/resnet_fresh_rotten_best.pth"
+)
 
 # --- FUNCTION TO LOAD YOLO MODEL ---
 @st.cache_resource
