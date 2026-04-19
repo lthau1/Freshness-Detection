@@ -1,56 +1,77 @@
+# =========================
+# SYSTEM CONFIG
+# =========================
 import os
 
 # Disable YOLO auto-install to avoid unexpected dependency installation
 os.environ["YOLO_AUTOINSTALL"] = "False"
 
+# =========================
+# CORE LIBRARIES
+# =========================
 import streamlit as st
 import torch
 import torch.nn as nn
-from torchvision import models, transforms
+import numpy as np
 import pandas as pd
 from PIL import Image
-from ultralytics import YOLO
 import cv2
-import numpy as np
-import gdown
-import os
 
-# --- PAGE CONFIGURATION ---
-st.set_page_config(page_title="AI-based Fruit & Vegetable Freshness Detection", layout="wide")
+# =========================
+# DEEP LEARNING
+# =========================
+from torchvision import models, transforms
+from ultralytics import YOLO
 
-# Create the 'models' directory if it does not exist
-if not os.path.exists('models'):
-    os.makedirs('models')
+# =========================
+# HUGGING FACE DOWNLOAD
+# =========================
+from huggingface_hub import hf_hub_download
 
-# Function to download a file from a given URL (e.g., Hugging Face or direct link)
-import requests
-
-HF_TOKEN = os.getenv("HF_TOKEN")  # retrieved from Render environment variable 
-
-def download_model(url, output_path):
-    if not os.path.exists(output_path):
-        headers = {"Authorization": f"Bearer {HF_TOKEN}"}
-
-        r = requests.get(url, headers=headers, stream=True)
-        r.raise_for_status()
-
-        with open(output_path, "wb") as f:
-            for chunk in r.iter_content(8192):
-                f.write(chunk)
-
-# Download failed: file is not publicly accessible on Google Drive (permission denied).
-#download_model('1GMorpD8czccvA52bIeoOlkmrUdSbSQQ5', 'models/best.pt')
-#download_model('1dIxLvd895dewrMI-kB6AWMnh8eGNGXp5', 'models/resnet_fresh_rotten_best.pth')
-
-# Download models from Hugging Face (public and reliable source)
-download_model(
-    "https://huggingface.co/your-name/repo/resolve/main/best.pt",
-    "models/best.pt"
+# =========================
+# CONFIG
+# =========================
+st.set_page_config(
+    page_title="AI-based Fruit & Vegetable Freshness Detection",
+    layout="wide"
 )
 
-download_model(
-    "https://huggingface.co/your-name/repo/resolve/main/resnet_fresh_rotten_best.pth",
-    "models/resnet_fresh_rotten_best.pth"
+# =========================
+# ENV VARIABLES
+# =========================
+HF_TOKEN = os.getenv("HF_TOKEN")  # optional (only needed for private repo)
+
+# =========================
+# FILE SYSTEM SETUP
+# =========================
+MODEL_DIR = "models"
+os.makedirs(MODEL_DIR, exist_ok=True)
+
+# =========================
+# MODEL DOWNLOAD FUNCTION
+# =========================
+def download_model(repo_id, filename, local_dir=MODEL_DIR):
+    file_path = os.path.join(local_dir, filename)
+
+    if not os.path.exists(file_path):
+        hf_hub_download(
+            repo_id=repo_id,
+            filename=filename,
+            local_dir=local_dir,
+            token=HF_TOKEN if HF_TOKEN else None
+        )
+
+    return file_path
+
+# Download models from Hugging Face (public and reliable source)
+best_model_path = download_model(
+    repo_id="lthau1/Freshness-Detection",
+    filename="best.pt"
+)
+
+resnet_model_path = download_model(
+    repo_id="lthau1/Freshness-Detection",
+    filename="resnet_fresh_rotten_best.pth"
 )
 
 # --- FUNCTION TO LOAD YOLO MODEL ---
