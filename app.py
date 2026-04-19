@@ -26,8 +26,8 @@ if not os.path.exists('models'):
 def download_model(file_id, output_path):
     if not os.path.exists(output_path):
         with st.spinner(f'Downloading {output_path}...'):
-            url = f'https://drive.google.com/uc?id={file_id}'
-            gdown.download(url, output_path, quiet=False, fuzzy=True)
+            url = f'https://drive.google.com/uc?export=download&id={file_id}'
+            gdown.download(url, output_path, quiet=False)
  
 
 # Download failed: file is not publicly accessible on Google Drive (permission denied).
