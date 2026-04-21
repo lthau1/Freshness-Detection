@@ -201,7 +201,7 @@ elif "2. System Demo" in app_mode:
                 # =========================
                 # 4. DISPLAY
                 # =========================
-                st.markdown(f"### 🥕 Product: **{label}**")
+                st.markdown(f"### Product: **{label}**")
 
                 if "fresh" in status.lower():
                     st.success(f"Freshness: {status}")
