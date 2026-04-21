@@ -60,3 +60,20 @@ img {
     background-color: #ffffff;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
+
+/* ===== HEADER ===== */
+.app-header {
+    margin-bottom: 10px;
+}
+
+.app-title {
+    color: #2e7d32;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.app-subtitle {
+    color: #6c757d;
+    margin-top: 0;
+    font-size: 14px;
+}

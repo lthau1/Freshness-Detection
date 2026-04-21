@@ -108,109 +108,90 @@ def load_css(file_name):
 load_css("assets/style.css")
 
 # --- SIDEBAR NAVIGATION ---
-with st.sidebar:
-    st.title("Navigation")
-    app_mode = st.radio("", ["1. Introduction", "2. System Demo"])
+
+st.markdown("""
+<div class="app-header">
+    <h2 class="app-title">Freshness Detection System</h2>
+    <p class="app-subtitle">
+        Upload an image to detect the fruit/vegetable type and classify its freshness level (Fresh or Rotten).
+    </p>
+</div>
+""", unsafe_allow_html=True)
+
+uploaded_file = st.file_uploader("Drop files or click to browse", type=["jpg", "png", "jpeg"])
+
+if uploaded_file:
+    img_pil = Image.open(uploaded_file).convert('RGB')
+    col_left, col_right = st.columns([1.2, 1]) 
     
+    with col_left:
+        st.image(img_pil, caption="🖼️ Original Image")
 
-# ---------------------------------------------------------
-# SECTION 1: INTRODUCTION
-# ---------------------------------------------------------
-if app_mode == "1. Introduction":
-    st.header("🍎 Scientific Research Introduction")
-    
-    st.write("""
-    ### Research Objectives:
-    Build an AI model using Deep Learning techniques to classify and evaluate the freshness of agricultural products, aiming to minimize food waste and improve production efficiency.
-    
-    ### Research Objects: 
-    9 types of fruits and vegetables (Apple, Banana, Bitter Gourd, Bell Pepper, Cucumber, Okra, Orange, Potato, Tomato).
-    
-    ### Technologies Used:
-    * **YOLO v11:** For object detection and localization.
-    * **ResNet50:** For detailed classification of fresh/withered status.
-    """)
-    
-# ---------------------------------------------------------
-# SECTION 2: SYSTEM DEMO - ROBUST GLOBAL ANALYSIS
-# ---------------------------------------------------------
-elif "2. System Demo" in app_mode:
-    st.header("🔍 Quality Analysis System")
-    
-    uploaded_file = st.file_uploader("Upload vegetable image...", type=["jpg", "png", "jpeg"])
+    with col_right:
+        st.write("### **Identification & Evaluation Results**")
+        try:
+            # =========================
+            # 1. YOLO DETECTION
+            # =========================
+            with st.spinner("Running YOLO..."):
+                yolo_model = YOLO(YOLO_PATH)
+                results = yolo_model(img_pil)
 
-    if uploaded_file:
-        img_pil = Image.open(uploaded_file).convert('RGB')
-        col_left, col_right = st.columns([1.2, 1]) 
-        
-        with col_left:
-            st.image(img_pil, caption="🖼️ Original Image")
+            # 🔥 FREE RAM NGAY
+            del yolo_model
+            gc.collect()
 
-        with col_right:
-            st.write("### **Identification & Evaluation Results**")
-            try:
-                # =========================
-                # 1. YOLO DETECTION
-                # =========================
-                with st.spinner("Running YOLO..."):
-                    yolo_model = YOLO(YOLO_PATH)
-                    results = yolo_model(img_pil)
+            # =========================
+            # 2. CHECK DETECTION
+            # =========================
+            if len(results[0].boxes) == 0:
+                st.warning("No object detected")
+                st.stop()
 
-                # 🔥 FREE RAM NGAY
-                del yolo_model
-                gc.collect()
+            best_box = results[0].boxes[0]
 
-                # =========================
-                # 2. CHECK DETECTION
-                # =========================
-                if len(results[0].boxes) == 0:
-                    st.warning("No object detected")
-                    st.stop()
+            label = results[0].names[int(best_box.cls[0])]
+            conf_yolo = float(best_box.conf[0])
 
-                best_box = results[0].boxes[0]
+            x1, y1, x2, y2 = map(int, best_box.xyxy[0])
+            crop_img = img_pil.crop((x1, y1, x2, y2))
 
-                label = results[0].names[int(best_box.cls[0])]
-                conf_yolo = float(best_box.conf[0])
+            # =========================
+            # 3. RESNET CLASSIFICATION
+            # =========================
+            resnet_model, device = load_resnet_model(RESNET_PATH)
 
-                x1, y1, x2, y2 = map(int, best_box.xyxy[0])
-                crop_img = img_pil.crop((x1, y1, x2, y2))
+            preprocess = transforms.Compose([
+                transforms.Resize((224, 224)),
+                transforms.ToTensor(),
+                transforms.Normalize(
+                    [0.485, 0.456, 0.406],
+                    [0.229, 0.224, 0.225]
+                )
+            ])
 
-                # =========================
-                # 3. RESNET CLASSIFICATION
-                # =========================
-                resnet_model, device = load_resnet_model(RESNET_PATH)
+            input_tensor = preprocess(crop_img).unsqueeze(0).to(device)
 
-                preprocess = transforms.Compose([
-                    transforms.Resize((224, 224)),
-                    transforms.ToTensor(),
-                    transforms.Normalize(
-                        [0.485, 0.456, 0.406],
-                        [0.229, 0.224, 0.225]
-                    )
-                ])
+            with torch.no_grad():
+                outputs = resnet_model(input_tensor)
+                probs = torch.softmax(outputs, dim=1)
+                conf_res, pred_idx = torch.max(probs, 1)
 
-                input_tensor = preprocess(crop_img).unsqueeze(0).to(device)
+            status = class_names[pred_idx.item()]
 
-                with torch.no_grad():
-                    outputs = resnet_model(input_tensor)
-                    probs = torch.softmax(outputs, dim=1)
-                    conf_res, pred_idx = torch.max(probs, 1)
+            # =========================
+            # 4. DISPLAY
+            # =========================
+            st.markdown(f"### Product: **{label}**")
 
-                status = class_names[pred_idx.item()]
+            if "fresh" in status.lower():
+                st.success(f"Freshness: {status}")
+            else:
+                st.error(f"Freshness: {status}")
 
-                # =========================
-                # 4. DISPLAY
-                # =========================
-                st.markdown(f"### Product: **{label}**")
+            st.write("---")
+            st.write(f"YOLO Confidence: {conf_yolo*100:.2f}%")
+            st.write(f"ResNet Confidence: {conf_res.item()*100:.2f}%")
 
-                if "fresh" in status.lower():
-                    st.success(f"Freshness: {status}")
-                else:
-                    st.error(f"Freshness: {status}")
-
-                st.write("---")
-                st.write(f"YOLO Confidence: {conf_yolo*100:.2f}%")
-                st.write(f"ResNet Confidence: {conf_res.item()*100:.2f}%")
-
-            except Exception as e:
-                st.error(f"Error: {e}")
+        except Exception as e:
+            st.error(f"Error: {e}")
