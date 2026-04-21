@@ -4,8 +4,8 @@
 
 TEXT = {
     "vi": {
-        "title": "Nhận diện & đánh giá độ tươi nông sản",
-        "subtitle": "Tải ảnh lên để nhận diện loại và đánh giá độ tươi (Tươi / Hư).",
+        "title": "Hệ thống nhận diện và phân loại độ tươi nông sản",
+        "subtitle": "Tải ảnh lên để hệ thống xác định loại nông sản và phân loại tình trạng (Tươi / Hư).",
         "note": "Áp dụng cho 9 loại: Táo, Chuối, Mướp đắng, Ớt chuông, Dưa leo, Đậu bắp, Cam, Khoai tây, Cà chua.",
         "upload": "Tải ảnh lên (jpg, png)",
         "result": "Kết quả nhận diện & đánh giá",
@@ -19,9 +19,9 @@ TEXT = {
         "error": "Lỗi"
     },
     "en": {
-        "title": "Freshness Detection System",
-        "subtitle": "Upload an image to detect the product and classify freshness (Fresh / Rotten).",
-        "note": "Supports 9 items: Apple, Banana, Bitter Gourd, Bell Pepper, Cucumber, Okra, Orange, Potato, Tomato.",
+        "title": "Fruit & Vegetable Freshness Detection System",
+        "subtitle": "Upload an image to identify the product type and classify its freshness (Fresh / Rotten).",
+        "note": "Supports 9 types: Apple, Banana, Bitter Gourd, Bell Pepper, Cucumber, Okra, Orange, Potato, Tomato.",
         "upload": "Upload image (jpg, png)",
         "result": "Detection & Evaluation Results",
         "product": "Product",
