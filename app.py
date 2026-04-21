@@ -2,8 +2,6 @@
 # SYSTEM CONFIG
 # =========================
 import os
-
-# Disable YOLO auto-install to avoid unexpected dependency installation
 os.environ["YOLO_AUTOINSTALL"] = "False"
 
 # =========================
@@ -13,9 +11,8 @@ import streamlit as st
 import torch
 import torch.nn as nn
 import numpy as np
-import pandas as pd
 from PIL import Image
-import cv2
+import gc
 
 # =========================
 # DEEP LEARNING
@@ -24,7 +21,7 @@ from torchvision import models, transforms
 from ultralytics import YOLO
 
 # =========================
-# HUGGING FACE DOWNLOAD
+# HUGGING FACE
 # =========================
 from huggingface_hub import hf_hub_download
 
@@ -37,47 +34,45 @@ st.set_page_config(
 )
 
 # =========================
-# ENV VARIABLES
+# ENV
 # =========================
-HF_TOKEN = os.getenv("HF_TOKEN")  # optional (only needed for private repo)
+HF_TOKEN = os.getenv("HF_TOKEN")
 
 # =========================
-# FILE SYSTEM SETUP
+# MODEL DIR
 # =========================
 MODEL_DIR = "models"
 os.makedirs(MODEL_DIR, exist_ok=True)
 
 # =========================
-# MODEL DOWNLOAD FUNCTION
+# DOWNLOAD MODEL
 # =========================
-def download_model(repo_id, filename, local_dir=MODEL_DIR):
-    file_path = os.path.join(local_dir, filename)
+def download_model(repo_id, filename):
+    path = os.path.join(MODEL_DIR, filename)
 
-    if not os.path.exists(file_path):
+    if not os.path.exists(path):
         hf_hub_download(
             repo_id=repo_id,
             filename=filename,
-            local_dir=local_dir,
+            local_dir=MODEL_DIR,
             token=HF_TOKEN if HF_TOKEN else None
         )
-
-    return file_path
+    return path
 
 # Download models from Hugging Face (public and reliable source)
-best_model_path = download_model(
-    repo_id="lthau1/Freshness-Detection",
-    filename="best.onnx"
+# =========================
+# DOWNLOAD ON START
+# =========================
+YOLO_PATH = download_model(
+    "lthau1/Freshness-Detection",
+    "best.onnx"
 )
 
-resnet_model_path = download_model(
-    repo_id="lthau1/Freshness-Detection",
-    filename="resnet_fresh_rotten_best.pth"
+RESNET_PATH = download_model(
+    "lthau1/Freshness-Detection",
+    "resnet_fresh_rotten_best.pth"
 )
 
-# --- FUNCTION TO LOAD YOLO MODEL ---
-@st.cache_resource
-def load_yolo_model():
-    return YOLO('models/best.onnx')
 
 # --- FUNCTION TO LOAD RESNET50 MODEL ---
 @st.cache_resource # Prevents reloading the model on every user interaction
@@ -154,58 +149,68 @@ elif "2. System Demo" in app_mode:
         with col_right:
             st.write("### **Identification & Evaluation Results**")
             try:
-                # Load models
-                yolo_model = load_yolo_model() 
-                resnet_model, device = load_resnet_model('models/resnet_fresh_rotten_best.pth')
-                
-                # Run inference
-                results = yolo_model(img_pil)
-                
-                if len(results[0].boxes) > 0:
-                    # Select the object with highest confidence as representative
-                    best_box = results[0].boxes[0] 
-                    ten_loai = yolo_model.names[int(best_box.cls[0])]
-                    conf_yolo = float(best_box.conf[0])
-                    
-                    # Crop the best region for status analysis
-                    x1, y1, x2, y2 = map(int, best_box.xyxy[0])
-                    crop_img = img_pil.crop((x1, y1, x2, y2))
-                    
-                    # Image preprocessing pipeline
-                    preprocess = transforms.Compose([
-                        transforms.Resize((224, 224)),
-                        transforms.ToTensor(),
-                        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-                    ])
-                    input_tensor = preprocess(crop_img).unsqueeze(0).to(device)
-                    
-                    # ResNet Status Classification
-                    with torch.no_grad():
-                        outputs = resnet_model(input_tensor)
-                        probs = torch.nn.functional.softmax(outputs, dim=1)
-                        conf_res, pred_idx = torch.max(probs, 1)
-                    
-                    trang_thai = class_names[pred_idx.item()]
-                    is_fresh = "fresh" in trang_thai.lower() or "tươi" in trang_thai.lower()
+                # =========================
+                # 1. YOLO DETECTION
+                # =========================
+                with st.spinner("Running YOLO..."):
+                    yolo_model = YOLO(YOLO_PATH)
+                    results = yolo_model(img_pil)
 
-                    # --- DISPLAY CONSOLIDATED RESULT ---
-                    st.markdown(f"### Product Type: **{ten_loai}**")
-                    
-                    if is_fresh:
-                        st.success(f"🌿 Freshness Status: **{trang_thai}**")
-                    else:
-                        st.error(f"🍂 Freshness Status: **{trang_thai}**")
-                    
-                    # Display 4 technical metrics
-                    st.write("---")
-                    st.write(f"Detection Confidence (YOLO): **{conf_yolo*100:.2f}%**")
-                    st.write(f"Classification Confidence (ResNet): **{conf_res.item()*100:.2f}%**")
-                    
-                    
+                # 🔥 FREE RAM NGAY
+                del yolo_model
+                gc.collect()
+
+                # =========================
+                # 2. CHECK DETECTION
+                # =========================
+                if len(results[0].boxes) == 0:
+                    st.warning("No object detected")
+                    st.stop()
+
+                best_box = results[0].boxes[0]
+
+                label = results[0].names[int(best_box.cls[0])]
+                conf_yolo = float(best_box.conf[0])
+
+                x1, y1, x2, y2 = map(int, best_box.xyxy[0])
+                crop_img = img_pil.crop((x1, y1, x2, y2))
+
+                # =========================
+                # 3. RESNET CLASSIFICATION
+                # =========================
+                resnet_model, device = load_resnet_model(RESNET_PATH)
+
+                preprocess = transforms.Compose([
+                    transforms.Resize((224, 224)),
+                    transforms.ToTensor(),
+                    transforms.Normalize(
+                        [0.485, 0.456, 0.406],
+                        [0.229, 0.224, 0.225]
+                    )
+                ])
+
+                input_tensor = preprocess(crop_img).unsqueeze(0).to(device)
+
+                with torch.no_grad():
+                    outputs = resnet_model(input_tensor)
+                    probs = torch.softmax(outputs, dim=1)
+                    conf_res, pred_idx = torch.max(probs, 1)
+
+                status = class_names[pred_idx.item()]
+
+                # =========================
+                # 4. DISPLAY
+                # =========================
+                st.markdown(f"### 🥕 Product: **{label}**")
+
+                if "fresh" in status.lower():
+                    st.success(f"Freshness: {status}")
                 else:
-                    st.warning("⚠️ System could not identify any objects in the image.")
+                    st.error(f"Freshness: {status}")
+
+                st.write("---")
+                st.write(f"YOLO Confidence: {conf_yolo*100:.2f}%")
+                st.write(f"ResNet Confidence: {conf_res.item()*100:.2f}%")
 
             except Exception as e:
-                st.error(f"❌ Processing Error: {e}")
-
-# ---------------------------------------------------------
+                st.error(f"Error: {e}")
