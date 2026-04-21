@@ -65,7 +65,7 @@ def download_model(repo_id, filename):
 # =========================
 YOLO_PATH = download_model(
     "lthau1/Freshness-Detection",
-    "best.onnx"
+    "best.pt"
 )
 
 RESNET_PATH = download_model(

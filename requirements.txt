@@ -7,5 +7,3 @@ numpy==1.26.4
 pandas
 pillow
 huggingface_hub
-onnxruntime==1.18.0
-onnx==1.16.0
