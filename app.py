@@ -66,7 +66,7 @@ def download_model(repo_id, filename, local_dir=MODEL_DIR):
 # Download models from Hugging Face (public and reliable source)
 best_model_path = download_model(
     repo_id="lthau1/Freshness-Detection",
-    filename="best.pt"
+    filename="best.onnx"
 )
 
 resnet_model_path = download_model(
@@ -77,7 +77,7 @@ resnet_model_path = download_model(
 # --- FUNCTION TO LOAD YOLO MODEL ---
 @st.cache_resource
 def load_yolo_model():
-    return YOLO('models/best.pt')
+    return YOLO('models/best.onnx')
 
 # --- FUNCTION TO LOAD RESNET50 MODEL ---
 @st.cache_resource # Prevents reloading the model on every user interaction
