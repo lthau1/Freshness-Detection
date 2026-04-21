@@ -120,38 +120,41 @@ load_css("assets/style.css")
 # =========================
 st.markdown("""
 <div class="app-header">
-    <h2 class="app-title">Freshness Detection System</h2>
+    <h2 class="app-title">Nhận diện & đánh giá độ tươi nông sản</h2>
     <p class="app-subtitle">
-        Upload an image to detect the fruit/vegetable type and classify its freshness level (Fresh or Rotten).
+        Tải ảnh lên để hệ thống nhận diện loại và đánh giá độ tươi (Tươi / Hư).
+    </p>
+    <p class="app-note">
+        Áp dụng cho 9 loại: Táo, Chuối, Mướp đắng, Ớt chuông, Dưa leo, Đậu bắp, Cam, Khoai tây, Cà chua.
     </p>
 </div>
 """, unsafe_allow_html=True)
 
-uploaded_file = st.file_uploader("Drop file or click to browse", type=["jpg", "png", "jpeg"])
+uploaded_file = st.file_uploader("Tải ảnh lên (jpg, png)", type=["jpg", "png", "jpeg"])
 
 if uploaded_file:
     img_pil = Image.open(uploaded_file).convert('RGB')
     col_left, col_right = st.columns([1.2, 1]) 
     
     with col_left:
-        st.image(img_pil, caption="🖼️ Original Image")
+        st.image(img_pil, caption="🖼️ Ảnh đã tải lên")
 
     with col_right:
-        st.write("### **Identification & Evaluation Results**")
+        st.write("### **Kết quả nhận diện & đánh giá**")
         try:
             # =========================
             # 1. YOLO DETECTION
             # =========================
             yolo_model = load_yolo_model(YOLO_PATH)
 
-            with st.spinner("Running YOLO..."):
+            with st.spinner("Đang chạy YOLO..."):
                 results = yolo_model(img_pil)
 
             # =========================
             # 2. CHECK DETECTION
             # =========================
             if len(results[0].boxes) == 0:
-                st.warning("No object detected")
+                st.warning("Không phát hiện đối tượng")
                 st.stop()
 
             best_box = results[0].boxes[0]
@@ -188,16 +191,16 @@ if uploaded_file:
             # =========================
             # 4. DISPLAY
             # =========================
-            st.markdown(f"### Product: **{label}**")
+            st.markdown(f"### Sản phẩm: **{label}**")
 
             if "fresh" in status.lower():
-                st.success(f"Freshness: {status}")
+                st.success(f"Độ tươi: {status}")
             else:
-                st.error(f"Freshness: {status}")
+                st.error(f"Độ tươi: {status}")
 
             st.write("---")
-            st.write(f"YOLO Confidence: {conf_yolo*100:.2f}%")
-            st.write(f"ResNet Confidence: {conf_res.item()*100:.2f}%")
+            st.write(f"Độ tin cậy YOLO: {conf_yolo*100:.2f}%")
+            st.write(f"Độ tin cậy ResNet: {conf_res.item()*100:.2f}%")
 
         except Exception as e:
-            st.error(f"Error: {e}")
+            st.error(f"Lỗi: {e}")
