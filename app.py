@@ -30,7 +30,7 @@ from huggingface_hub import hf_hub_download
 # =========================
 st.set_page_config(
     page_title="AI-based Fruit & Vegetable Freshness Detection",
-    layout="wide"
+    layout="centered"
 )
 
 # =========================

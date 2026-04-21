@@ -1,27 +1,62 @@
-.main { background-color: #f5f7f9; }
-    .stHeading { color: #2e7d32; }
-    /* Hide the default radio button circle */
-    [data-testid="stSidebar"] .stRadio div[role="radiogroup"] > label > div:first-child {
-        display: none !important;
-    }
-    /* Style menu items as rectangular blocks */
-    [data-testid="stSidebar"] .stRadio div[role="radiogroup"] > label {
-        background-color: transparent;
-        border-radius: 5px;
-        padding: 10px 15px;
-        margin-bottom: 5px;
-        transition: all 0.3s;
-        cursor: pointer;
-        display: block;
-        border: 1px solid transparent;
-    }
-    /* Hover effect */
-    [data-testid="stSidebar"] .stRadio div[role="radiogroup"] > label:hover {
-        background-color: #e0e0e0; /* Nền đậm lên một chút */
-        border: 1px solid #ccc;
-    }
-    /* Style for selected item */
-    [data-testid="stSidebar"] .stRadio div[role="radiogroup"] [data-bv-pressed="true"] > label {
-        background-color: #2e7d32 !important;
-        color: white !important;
-    }
+/* ===== MAIN BACKGROUND ===== */
+.main {
+    background-color: #f5f7f9;
+    display: flex;
+    justify-content: center; /* center content horizontally */
+}
+
+/* ===== LIMIT CONTENT WIDTH (VERY IMPORTANT FOR ZOOM 100%) ===== */
+.block-container {
+    max-width: 950px;   /* prevent UI from stretching too wide */
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+/* ===== HEADINGS STYLE ===== */
+.stHeading {
+    color: #2e7d32;
+}
+
+/* ===== SIDEBAR RADIO BUTTON CUSTOMIZATION ===== */
+
+/* Hide default radio circle */
+[data-testid="stSidebar"] .stRadio div[role="radiogroup"] > label > div:first-child {
+    display: none !important;
+}
+
+/* Style radio items as rectangular buttons */
+[data-testid="stSidebar"] .stRadio div[role="radiogroup"] > label {
+    background-color: transparent;
+    border-radius: 6px;
+    padding: 10px 15px;
+    margin-bottom: 6px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: block;
+    border: 1px solid transparent;
+}
+
+/* Hover effect */
+[data-testid="stSidebar"] .stRadio div[role="radiogroup"] > label:hover {
+    background-color: #e0e0e0;
+    border: 1px solid #ccc;
+}
+
+/* Selected item */
+[data-testid="stSidebar"] .stRadio div[role="radiogroup"] [data-bv-pressed="true"] > label {
+    background-color: #2e7d32 !important;
+    color: white !important;
+}
+
+/* ===== IMAGE STYLE ===== */
+img {
+    border-radius: 12px;
+}
+
+/* ===== RESULT BOX ===== */
+.result-box {
+    padding: 20px;
+    border-radius: 12px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
