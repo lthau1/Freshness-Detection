@@ -5,9 +5,9 @@
     justify-content: center; /* center content horizontally */
 }
 
-/* ===== LIMIT CONTENT WIDTH (VERY IMPORTANT FOR ZOOM 100%) ===== */
+/* ===== LIMIT CONTENT WIDTH (FIX ZOOM 100%) ===== */
 .block-container {
-    max-width: 950px;   /* prevent UI from stretching too wide */
+    max-width: 950px;
     padding-top: 2rem;
     padding-bottom: 2rem;
 }
@@ -15,6 +15,25 @@
 /* ===== HEADINGS STYLE ===== */
 .stHeading {
     color: #2e7d32;
+}
+
+/* ===== FORCE H2 COLOR (FIX STREAMLIT OVERRIDE) ===== */
+.app-header h2.app-title {
+    color: #2e7d32 !important;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+/* ===== SUBTITLE ===== */
+.app-subtitle {
+    color: #6c757d;
+    margin-top: 0;
+    font-size: 14px;
+}
+
+/* ===== HEADER CONTAINER ===== */
+.app-header {
+    margin-bottom: 10px;
 }
 
 /* ===== SIDEBAR RADIO BUTTON CUSTOMIZATION ===== */
@@ -59,21 +78,4 @@ img {
     border-radius: 12px;
     background-color: #ffffff;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-/* ===== HEADER ===== */
-.app-header {
-    margin-bottom: 10px;
-}
-
-.app-title {
-    color: #2e7d32;
-    margin-bottom: 5px;
-    font-weight: 600;
-}
-
-.app-subtitle {
-    color: #6c757d;
-    margin-top: 0;
-    font-size: 14px;
 }

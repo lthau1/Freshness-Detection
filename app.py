@@ -12,8 +12,7 @@ import torch
 import torch.nn as nn
 import numpy as np
 from PIL import Image
-import gc
-
+import time
 # =========================
 # DEEP LEARNING
 # =========================
@@ -73,8 +72,16 @@ RESNET_PATH = download_model(
     "resnet_fresh_rotten_best.pth"
 )
 
+# =========================
+# --- FUNCTION TO LOAD YOLOv11 MODEL ---
+# =========================
+@st.cache_resource
+def load_yolo_model(path):
+    return YOLO(path)
 
+# =========================
 # --- FUNCTION TO LOAD RESNET50 MODEL ---
+# =========================
 @st.cache_resource # Prevents reloading the model on every user interaction
 def load_resnet_model(model_path):
     # Initialize ResNet50 model architecture
@@ -103,12 +110,14 @@ class_names = ['Fresh', 'Rotten']
 # Function to load external CSS
 def load_css(file_name):
     with open(file_name, encoding="utf-8") as f:
-        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+        css = f.read()
+    st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
 
 load_css("assets/style.css")
 
-# --- SIDEBAR NAVIGATION ---
-
+# =========================
+# --- UI ---
+# =========================
 st.markdown("""
 <div class="app-header">
     <h2 class="app-title">Freshness Detection System</h2>
@@ -118,7 +127,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-uploaded_file = st.file_uploader("Drop files or click to browse", type=["jpg", "png", "jpeg"])
+uploaded_file = st.file_uploader("Drop file or click to browse", type=["jpg", "png", "jpeg"])
 
 if uploaded_file:
     img_pil = Image.open(uploaded_file).convert('RGB')
@@ -133,13 +142,10 @@ if uploaded_file:
             # =========================
             # 1. YOLO DETECTION
             # =========================
-            with st.spinner("Running YOLO..."):
-                yolo_model = YOLO(YOLO_PATH)
-                results = yolo_model(img_pil)
+            yolo_model = load_yolo_model(YOLO_PATH)
 
-            # 🔥 FREE RAM NGAY
-            del yolo_model
-            gc.collect()
+            with st.spinner("Running YOLO..."):
+                results = yolo_model(img_pil)
 
             # =========================
             # 2. CHECK DETECTION
