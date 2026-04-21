@@ -10,9 +10,8 @@ os.environ["YOLO_AUTOINSTALL"] = "False"
 import streamlit as st
 import torch
 import torch.nn as nn
-import numpy as np
 from PIL import Image
-import time
+
 # =========================
 # DEEP LEARNING
 # =========================
@@ -25,17 +24,17 @@ from ultralytics import YOLO
 from huggingface_hub import hf_hub_download
 
 # =========================
+# IMPORT LANGUAGE FILE
+# =========================
+from lang import TEXT, LABEL_MAP, STATUS_MAP
+
+# =========================
 # CONFIG
 # =========================
 st.set_page_config(
-    page_title="AI-based Fruit & Vegetable Freshness Detection",
+    page_title="Freshness Detection",
     layout="centered"
 )
-
-# =========================
-# ENV
-# =========================
-HF_TOKEN = os.getenv("HF_TOKEN")
 
 # =========================
 # MODEL DIR
@@ -48,125 +47,132 @@ os.makedirs(MODEL_DIR, exist_ok=True)
 # =========================
 def download_model(repo_id, filename):
     path = os.path.join(MODEL_DIR, filename)
-
     if not os.path.exists(path):
         hf_hub_download(
             repo_id=repo_id,
             filename=filename,
-            local_dir=MODEL_DIR,
-            token=HF_TOKEN if HF_TOKEN else None
+            local_dir=MODEL_DIR
         )
     return path
 
-# Download models from Hugging Face (public and reliable source)
-# =========================
-# DOWNLOAD ON START
-# =========================
-YOLO_PATH = download_model(
-    "lthau1/Freshness-Detection",
-    "best.pt"
-)
-
-RESNET_PATH = download_model(
-    "lthau1/Freshness-Detection",
-    "resnet_fresh_rotten_best.pth"
-)
+YOLO_PATH = download_model("lthau1/Freshness-Detection", "best.pt")
+RESNET_PATH = download_model("lthau1/Freshness-Detection", "resnet_fresh_rotten_best.pth")
 
 # =========================
-# --- FUNCTION TO LOAD YOLOv11 MODEL ---
+# LOAD MODELS
 # =========================
 @st.cache_resource
 def load_yolo_model(path):
     return YOLO(path)
 
-# =========================
-# --- FUNCTION TO LOAD RESNET50 MODEL ---
-# =========================
-@st.cache_resource # Prevents reloading the model on every user interaction
-def load_resnet_model(model_path):
-    # Initialize ResNet50 model architecture
+@st.cache_resource
+def load_resnet_model(path):
     model = models.resnet50(weights=None)
-    num_ftrs = model.fc.in_features
-    # Adjust final output layer to match your classification classes
-    model.fc = nn.Linear(num_ftrs, 2) 
-    
-    # Load weights from .pth file
+    model.fc = nn.Linear(model.fc.in_features, 2)
+
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    checkpoint = torch.load(model_path, map_location=device)
-    
-    # Check if checkpoint is a dictionary (common when saving via state_dict)
+    checkpoint = torch.load(path, map_location=device)
+
     if isinstance(checkpoint, dict) and 'state_dict' in checkpoint:
         model.load_state_dict(checkpoint['state_dict'])
     else:
         model.load_state_dict(checkpoint)
-        
+
     model.to(device)
     model.eval()
     return model, device
 
-# --- CLASS LABELS (Ensure order matches your data.yaml) ---
 class_names = ['Fresh', 'Rotten']
 
-# Function to load external CSS
+# =========================
+# LOAD CSS
+# =========================
 def load_css(file_name):
     with open(file_name, encoding="utf-8") as f:
-        css = f.read()
-    st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 load_css("assets/style.css")
 
-# =========================
-# --- UI ---
-# =========================
-st.markdown("""
-<div class="app-header">
-    <h2 class="app-title">Nhận diện & đánh giá độ tươi nông sản</h2>
-    <p class="app-subtitle">
-        Tải ảnh lên để hệ thống nhận diện loại và đánh giá độ tươi (Tươi / Hư).
-    </p>
-    <p class="app-note">
-        Áp dụng cho 9 loại: Táo, Chuối, Mướp đắng, Ớt chuông, Dưa leo, Đậu bắp, Cam, Khoai tây, Cà chua.
-    </p>
-</div>
-""", unsafe_allow_html=True)
 
-uploaded_file = st.file_uploader("Tải ảnh lên (jpg, png)", type=["jpg", "png", "jpeg"])
+# =========================
+# TRANSLATE FUNCTIONS
+# =========================
+def translate_label(label_en):
+    return LABEL_MAP.get(label_en.lower(), {}).get(lang, label_en)
 
+def translate_status(status_en):
+    return STATUS_MAP.get(status_en, {}).get(lang, status_en)
+
+# =========================
+# UI HEADER
+# =========================
+# LANGUAGE SELECT (first)
+col_title, col_lang = st.columns([4, 1])
+
+with col_lang:
+    st.markdown('<div style="padding-top: 10px;"></div>', unsafe_allow_html=True)
+    lang_choice = st.selectbox(
+        "🌐",
+        ["Tiếng Việt", "English"],
+        label_visibility="collapsed"
+    )
+
+lang = "vi" if lang_choice == "Tiếng Việt" else "en"
+t = TEXT[lang]
+
+with col_title:
+    st.markdown(f"""
+    <div class="app-header">
+        <h2 class="app-title">{t['title']}</h2>
+        <p class="app-subtitle">{t['subtitle']}</p>
+        <p class="app-note">{t['note']}</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+# =========================
+# UPLOAD
+# =========================
+uploaded_file = st.file_uploader(t["upload"], type=["jpg", "png", "jpeg"])
+
+# =========================
+# PROCESS
+# =========================
 if uploaded_file:
     img_pil = Image.open(uploaded_file).convert('RGB')
-    col_left, col_right = st.columns([1.2, 1]) 
-    
+
+    col_left, col_right = st.columns([1.2, 1])
+
     with col_left:
-        st.image(img_pil, caption="🖼️ Ảnh đã tải lên")
+        st.image(img_pil, caption="🖼️")
 
     with col_right:
-        st.write("### **Kết quả nhận diện & đánh giá**")
+        st.write(f"### **{t['result']}**")
+
         try:
             # =========================
-            # 1. YOLO DETECTION
+            # YOLO
             # =========================
             yolo_model = load_yolo_model(YOLO_PATH)
 
-            with st.spinner("Đang chạy YOLO..."):
+            with st.spinner(t["running"]):
                 results = yolo_model(img_pil)
 
-            # =========================
-            # 2. CHECK DETECTION
-            # =========================
             if len(results[0].boxes) == 0:
-                st.warning("Không phát hiện đối tượng")
+                st.warning(t["no_object"])
                 st.stop()
 
             best_box = results[0].boxes[0]
 
-            label = results[0].names[int(best_box.cls[0])]
+            label_en = results[0].names[int(best_box.cls[0])]
+            label = translate_label(label_en)
+
             conf_yolo = float(best_box.conf[0])
 
             x1, y1, x2, y2 = map(int, best_box.xyxy[0])
             crop_img = img_pil.crop((x1, y1, x2, y2))
 
             # =========================
-            # 3. RESNET CLASSIFICATION
+            # RESNET
             # =========================
             resnet_model, device = load_resnet_model(RESNET_PATH)
 
@@ -186,21 +192,22 @@ if uploaded_file:
                 probs = torch.softmax(outputs, dim=1)
                 conf_res, pred_idx = torch.max(probs, 1)
 
-            status = class_names[pred_idx.item()]
+            status_en = class_names[pred_idx.item()]
+            status = translate_status(status_en)
 
             # =========================
-            # 4. DISPLAY
+            # DISPLAY
             # =========================
-            st.markdown(f"### Sản phẩm: **{label}**")
+            st.markdown(f"### {t['product']}: **{label}**")
 
-            if "fresh" in status.lower():
-                st.success(f"Độ tươi: {status}")
+            if status_en.lower() == "fresh":
+                st.success(status)
             else:
-                st.error(f"Độ tươi: {status}")
+                st.error(status)
 
             st.write("---")
-            st.write(f"Độ tin cậy YOLO: {conf_yolo*100:.2f}%")
-            st.write(f"Độ tin cậy ResNet: {conf_res.item()*100:.2f}%")
+            st.write(f"{t['yolo_conf']}: {conf_yolo*100:.2f}%")
+            st.write(f"{t['resnet_conf']}: {conf_res.item()*100:.2f}%")
 
         except Exception as e:
-            st.error(f"Lỗi: {e}")
+            st.error(f"{t['error']}: {e}")
